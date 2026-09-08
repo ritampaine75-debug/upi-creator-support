@@ -46,6 +46,7 @@ import {
   statusLabel,
 } from './utils.js';
 import {
+  normalizeUsername,
   sanitizeImageFile,
   sanitizeText,
   validateAmount,
@@ -713,6 +714,12 @@ async function handleChange(event) {
 const updatePaymentSearch = debounce((value) => { state.paymentFilters.search = value; renderApp(); }, 240);
 function handleInput(event) {
   const input = event.target;
+  if (input.name === 'username') {
+    const normalized = normalizeUsername(input.value);
+    if (input.value !== normalized) input.value = normalized;
+    const helper = input.closest('.form-field')?.querySelector('.form-helper');
+    if (helper) helper.textContent = `Your page: ${routeUrl(`@${normalized || 'username'}`)}`;
+  }
   if (input.matches('[data-action="payment-search"]')) updatePaymentSearch(input.value);
   if (input.matches('[data-action="payment-min"]')) { state.paymentFilters.min = input.value; renderApp(); }
   if (input.matches('[data-action="payment-max"]')) { state.paymentFilters.max = input.value; renderApp(); }

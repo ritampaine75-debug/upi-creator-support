@@ -5,7 +5,14 @@ const RESERVED_USERNAMES = new Set([
 ]);
 
 export function normalizeUsername(value) {
-  return String(value || '').trim().toLowerCase();
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/^@+/, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9_-]/g, '-')
+    .replace(/-+/g, '-')
+    .slice(0, 24);
 }
 
 export function validateUsername(value) {

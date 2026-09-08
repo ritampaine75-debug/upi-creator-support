@@ -26,7 +26,7 @@ function cleanText(value, max) {
 }
 
 function validateUsername(value) {
-  const username = cleanText(value, 24).toLowerCase();
+  const username = cleanText(value, 80).toLowerCase().replace(/^@+/, '').replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, '-').replace(/-+/g, '-').slice(0, 24);
   if (!/^[a-z0-9_-]{3,24}$/.test(username) || RESERVED_USERNAMES.has(username)) throw new HttpsError('invalid-argument', 'That username is invalid or reserved.');
   return username;
 }
