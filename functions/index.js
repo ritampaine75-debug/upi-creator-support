@@ -84,6 +84,14 @@ function notification({ type, title, message, paymentId = null }) {
   return { type, title, message, paymentId, read: false, createdAt: Date.now() };
 }
 
+async function enforceRateLimit(request, action, limit) {
+  const source = request.auth?.uid || request.rawRequest?.ip || 'anonymous';
+  const minute = Math.floor(Date.now() / 60000);
+  const key = crypto.createHash('sha256').update(`${action}:${source}:${minute}`, 'utf8').digest('hex');
+  const result = await db.ref(`rateLimits/${key}`).transaction((current) => Number(current || 0) + 1);
+  if (Number(result.snapshot.val() || 0) > limit) throw new HttpsError('resource-exhausted', 'Too many requests. Please wait and try again.');
+}
+
 function incrementAnalytics(creatorId, changes) {
   return db.ref(`analytics/${creatorId}`).transaction((current) => {
     const analytics = current || { profileViews: 0, supportPageViews: 0, supportAttempts: 0, submittedPayments: 0, verifiedPayments: 0, pendingPaymentCount: 0, rejectedPayments: 0, flaggedPayments: 0, verifiedAmount: 0, totalSubmittedAmount: 0 };
@@ -141,6 +149,7 @@ exports.saveCreatorProfile = onCall(async (request) => {
 
 exports.submitPayment = onCall(async (request) => {
   verifyAppCheck(request);
+  await enforceRateLimit(request, 'submit-payment', 5);
   const input = request.data || {};
   const creatorId = cleanText(input.creatorId, 128);
   const creator = await read(`creators/${creatorId}`);
@@ -224,6 +233,7 @@ exports.reviewPayment = onCall(async (request) => {
 
 exports.recordProfileView = onCall(async (request) => {
   verifyAppCheck(request);
+  await enforceRateLimit(request, 'profile-view', 120);
   const creatorId = cleanText(request.data?.creatorId, 128);
   const creator = await read(`creators/${creatorId}`);
   if (!creator || creator.isPublic === false) return { recorded: false };
