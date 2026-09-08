@@ -191,6 +191,17 @@ function updateDocumentMeta(route) {
   let canonical = document.querySelector('link[rel="canonical"]');
   if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
   canonical.href = new URL(route.name === 'creator' || route.name === 'creator-support' ? routeUrl(`@${creator?.username || route.username || ''}`) : routeUrl(route.path || ''), window.location.origin).href;
+  setMetaProperty('og:title', title);
+  setMetaProperty('og:description', description);
+  setMetaProperty('og:url', canonical.href);
+  setMetaProperty('og:type', 'website');
+  setMetaProperty('twitter:card', 'summary');
+}
+
+function setMetaProperty(property, content) {
+  let meta = document.querySelector(`meta[property="${property}"], meta[name="${property}"]`);
+  if (!meta) { meta = document.createElement('meta'); if (property.startsWith('og:')) meta.setAttribute('property', property); else meta.name = property; document.head.appendChild(meta); }
+  meta.content = content;
 }
 
 function updateShellUser() {
