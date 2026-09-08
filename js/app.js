@@ -730,7 +730,7 @@ async function handleUser(user) {
     } catch (error) {
       state.authError = friendlyFirebaseError(error);
     }
-    if (isAuthRoute(state.route)) return navigate('dashboard/', { replace: true });
+    if (isAuthRoute(state.route) || state.route.name === 'home') return navigate(state.creator ? 'dashboard/' : 'settings/', { replace: true });
   } else {
     stopUserSubscriptions();
     state.userProfile = null;
