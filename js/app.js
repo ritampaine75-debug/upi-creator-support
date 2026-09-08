@@ -95,6 +95,7 @@ const state = {
   avatarDraft: '',
   subscriptions: { payments: null, notifications: null },
   lastPayment: null,
+  paymentStatusLoad: '',
   authBusy: false,
   formError: '',
 };
@@ -288,6 +289,13 @@ function prepareDataLoad() {
         if (creator) trackPublicProfileView(creator.uid, creator.username);
         renderApp();
       }).catch((error) => { state.publicCreatorStatus = 'error'; state.publicCreatorError = friendlyFirebaseError(error); renderApp(); });
+    }
+  }
+  if (['payment-pending', 'payment-success', 'payment-failed'].includes(route.name)) {
+    const paymentId = parseQuery().id;
+    if (paymentId && paymentId !== state.paymentStatusLoad && state.lastPayment?.id !== paymentId && state.user) {
+      state.paymentStatusLoad = paymentId;
+      getPayment(paymentId).then((payment) => { if (payment) state.lastPayment = { ...payment, id: paymentId, creatorUsername: state.publicCreator?.username }; renderApp(); }).catch(() => {});
     }
   }
   if (route.admin && state.adminStatus === 'idle' && state.user) {
