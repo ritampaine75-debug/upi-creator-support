@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard/
+Disallow: /payments/
+Disallow: /analytics/
+Disallow: /settings/
+Disallow: /notifications/
+Disallow: /admin/
+Disallow: /payment/
 
-Sitemap: https://your-domain.example/sitemap.xml
+Sitemap: https://ritampaine75-debug.github.io/upi-creator-support/sitemap.xml

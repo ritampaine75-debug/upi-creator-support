@@ -2,7 +2,7 @@
   "name": "Supportly — UPI creator support",
   "short_name": "Supportly",
   "description": "Support creators directly with UPI.",
-  "start_url": "./#overview",
+  "start_url": "./dashboard/",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f6fb",

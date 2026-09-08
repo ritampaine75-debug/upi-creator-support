@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f5f6fb" />
     <meta name="description" content="Support creators directly with UPI on Supportly." />
-    <meta name="supportly-route" content="home" />
-    <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="icon" href="./icon-192.svg" />
-    <link rel="stylesheet" href="./styles.css" />
-    <title>Supportly — Creator support</title>
+    <meta name="supportly-route" content="terms" />
+    <link rel="manifest" href="../manifest.webmanifest" />
+    <link rel="icon" href="../icon-192.svg" />
+    <link rel="stylesheet" href="../styles.css" />
+    <title>Terms — Supportly</title>
   </head>
   <body>
     <script>
       const marker = '/upi-creator-support/';
       window.SUPPORTLY_BASE_PATH = window.location.pathname.includes(marker) ? marker : '/';
-      window.SUPPORTLY_ASSET_BASE = './';
+      window.SUPPORTLY_ASSET_BASE = '../';
     </script>
-    <script type="module" src="./js/bootstrap.js"></script>
+    <script type="module" src="../js/bootstrap.js"></script>
   </body>
 </html>

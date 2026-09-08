@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f5f6fb" />
+    <meta name="description" content="Support creators directly with UPI on Supportly." />
+    <title>Supportly — Creator support</title>
+    <script>
+      const marker = '/upi-creator-support/';
+      const supportlyBase = window.location.pathname.includes(marker) ? marker : '/';
+      window.SUPPORTLY_BASE_PATH = supportlyBase;
+      window.SUPPORTLY_ASSET_BASE = supportlyBase;
+      document.write(`<link rel="manifest" href="${supportlyBase}manifest.webmanifest"><link rel="icon" href="${supportlyBase}icon-192.svg"><link rel="stylesheet" href="${supportlyBase}styles.css">`);
+    </script>
+  </head>
+  <body>
+    <script>
+      const appModule = document.createElement('script');
+      appModule.type = 'module';
+      appModule.src = `${window.SUPPORTLY_BASE_PATH}js/bootstrap.js`;
+      document.body.appendChild(appModule);
+    </script>
+  </body>
+</html>
