@@ -801,3 +801,6 @@ renderApp();
 if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
 }
+
+window.addEventListener('offline', () => showToast('You are offline', 'Payment submissions must not silently succeed while offline.', 'error'));
+window.addEventListener('online', () => showToast('Back online', 'You can continue using the public page and dashboard.', 'success'));
