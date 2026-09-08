@@ -31,6 +31,7 @@
 
     "payments": {
       ".read": "auth != null && root.child('admins').child(auth.uid).child('isActive').val() === true",
+      ".indexOn": ["creatorId", "status", "createdAt"],
       "$paymentId": {
         ".read": "auth != null && (data.child('creatorId').val() === auth.uid || data.child('supporterId').val() === auth.uid || root.child('admins').child(auth.uid).child('isActive').val() === true)",
         ".write": false
@@ -60,6 +61,7 @@
 
     "notifications": {
       "$uid": {
+        ".indexOn": ["createdAt", "read"],
         ".read": "auth != null && auth.uid === $uid",
         ".write": "auth != null && auth.uid === $uid && data.exists() && newData.exists() && newData.child('type').val() === data.child('type').val() && newData.child('title').val() === data.child('title').val() && newData.child('message').val() === data.child('message').val() && newData.child('read').isBoolean() && newData.child('createdAt').val() === data.child('createdAt').val()"
       }
