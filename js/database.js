@@ -12,7 +12,7 @@ import {
   set,
   update,
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js';
-import { db, functions } from './firebase.js';
+import { auth, db, functions } from './firebase.js';
 import { sha256 } from './security.js';
 
 export function pathRef(path) {
@@ -64,8 +64,44 @@ export async function getCreatorByUsername(username) {
 
 export async function saveCreatorProfile(profile) {
   const callable = httpsCallable(functions, 'saveCreatorProfile');
-  const result = await callable(profile);
-  return result.data;
+  try {
+    const result = await callable(profile);
+    return result.data;
+  } catch (error) {
+    // Profile data is safe to write with owner-enforced Realtime Database rules.
+    // This fallback keeps onboarding usable when the optional profile function
+    // has not been deployed yet. Payment creation and verification never use it.
+    const functionUnavailable = ['functions/not-found', 'functions/unavailable', 'functions/internal', 'functions/unknown'].includes(error?.code);
+    if (!functionUnavailable) throw error;
+    return saveCreatorProfileDirect(profile);
+  }
+}
+
+async function saveCreatorProfileDirect(profile) {
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw Object.assign(new Error('Authentication required'), { code: 'auth/requires-login' });
+  const username = String(profile.username || '').trim().toLowerCase();
+  const creatorRef = pathRef(`creators/${uid}`);
+  const existingSnapshot = await get(creatorRef);
+  const existing = existingSnapshot.exists() ? existingSnapshot.val() : null;
+  const usernameRef = pathRef(`usernames/${username}`);
+  const claim = await runTransaction(usernameRef, (current) => current || { uid });
+  const claimValue = claim.snapshot.val();
+  if (!claim.committed || claimValue?.uid !== uid) throw Object.assign(new Error('Username already taken'), { code: 'database/username-taken' });
+
+  const { uid: ignoredUid, ...profileWithoutUid } = profile;
+  const creator = {
+    ...profileWithoutUid,
+    createdAt: Number(existing?.createdAt || Date.now()),
+    updatedAt: Date.now(),
+  };
+  const updates = { [`creators/${uid}`]: creator, [`usernames/${username}`]: { uid } };
+  if (existing?.username && existing.username !== username) {
+    const oldOwner = await getPath(`usernames/${existing.username}`);
+    if (oldOwner?.uid === uid) updates[`usernames/${existing.username}`] = null;
+  }
+  await update(pathRef('/'), updates);
+  return { ...creator, uid };
 }
 
 export async function submitPayment(payload) {

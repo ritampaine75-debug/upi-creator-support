@@ -15,7 +15,7 @@
     "usernames": {
       "$username": {
         ".read": true,
-        ".write": false,
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.child('uid').val() === auth.uid && (!newData.exists() || newData.child('uid').val() === auth.uid)))",
         ".validate": "$username.matches(/^[a-z0-9_-]{3,24}$/) && newData.hasChildren(['uid']) && newData.child('uid').isString()"
       }
     },
@@ -24,8 +24,8 @@
       ".read": "auth != null && root.child('admins').child(auth.uid).child('isActive').val() === true",
       "$uid": {
         ".read": "data.child('isPublic').val() === true || (auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).child('isActive').val() === true))",
-        ".write": false,
-        ".validate": "newData.hasChildren(['username', 'displayName', 'bio', 'avatar', 'youtube', 'payment', 'supportAmounts', 'thankYouMessage', 'isPublic', 'createdAt', 'updatedAt']) && newData.child('username').isString() && newData.child('displayName').isString() && newData.child('displayName').val().length <= 80 && newData.child('bio').isString() && newData.child('bio').val().length <= 160 && newData.child('avatar').isString() && newData.child('avatar').val().length <= 260000 && newData.child('youtube').hasChildren(['channelId', 'channelName', 'channelUrl']) && newData.child('payment').child('currency').val() === 'INR' && newData.child('supportAmounts').hasChildren() && newData.child('thankYouMessage').isString() && newData.child('thankYouMessage').val().length <= 120 && newData.child('isPublic').isBoolean()"
+        ".write": "auth != null && auth.uid === $uid && root.child('usernames').child(newData.child('username').val()).child('uid').val() === auth.uid",
+        ".validate": "newData.hasChildren(['username', 'displayName', 'bio', 'avatar', 'youtube', 'payment', 'supportAmounts', 'thankYouMessage', 'isPublic', 'createdAt', 'updatedAt']) && newData.child('username').isString() && newData.child('username').val().matches(/^[a-z0-9_-]{3,24}$/) && newData.child('displayName').isString() && newData.child('displayName').val().length <= 80 && newData.child('bio').isString() && newData.child('bio').val().length <= 160 && newData.child('avatar').isString() && newData.child('avatar').val().length <= 260000 && newData.child('youtube').hasChildren(['channelId', 'channelName', 'channelUrl']) && newData.child('payment').child('currency').val() === 'INR' && newData.child('payment').child('upiId').isString() && newData.child('payment').child('upiId').val().length <= 256 && newData.child('supportAmounts').hasChildren() && newData.child('thankYouMessage').isString() && newData.child('thankYouMessage').val().length <= 120 && newData.child('isPublic').isBoolean() && newData.child('createdAt').isNumber() && newData.child('updatedAt').isNumber()"
       }
     },
 

@@ -74,8 +74,12 @@ export function friendlyFirebaseError(error) {
     'functions/not-found': 'The trusted server operation is not deployed yet. See the production setup guide.',
     'functions/unavailable': 'The server is temporarily unavailable. Please try again shortly.',
     'functions/resource-exhausted': 'Too many requests. Please try again later.',
+    'functions/invalid-argument': 'Check your profile details and try again.',
+    'functions/internal': 'The profile service is unavailable. Please try again.',
     'functions/failed-precondition': 'This action cannot be completed in the current state.',
     'functions/already-exists': 'This transaction reference has already been submitted.',
+    'auth/requires-login': 'Please sign in before saving your creator profile.',
+    'database/username-taken': 'That username is already taken. Choose another one.',
   };
   if (messages[code]) return messages[code];
   if (String(error?.message || '').toLowerCase().includes('google')) return 'Google Sign-In is currently unavailable. Please enable Google authentication in Firebase Console.';
